@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en" x-data="appRoot()">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">Chiedza Crafts | Zimbabwe</title>
+  <meta name="description" content="Handcrafted goods made with Zimbabwean pride." />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script>
+    // ============================================================
+    //  BUSINESS CONFIG — edit once, applies everywhere
+    // ============================================================
+    const BUSINESS_INFO = {
+      name:            "Chiedza Crafts",
+      tagline:         "Handcrafted goods made with Zimbabwean pride.",
+      description:     "We are a Harare-based small business creating high-quality handmade crafts, gifts, and home décor. Every piece is made locally with love — supporting artisans and celebrating our culture.",
+      phone:           "263771234567",
+      phoneDisplay:    "+263 77 123 4567",
+      email:           "hello@chiedzcrafts.co.zw",
+      location:        "Corner Samora Machel & Julius Nyerere, Harare, Zimbabwe",
+      whatsappGreeting:"Hello! I am interested in your products.",
+      apiBase:         "http://localhost:8000",   // Backend URL
+      colors: {
+        primary:     "#C8602A",
+        primaryDark: "#A34A1E",
+        accent:      "#F5C842",
+        dark:        "#1A1108",
+        light:       "#FDF6EE",
+      },
+      services: [
+        { icon:"🪑", title:"Custom Furniture",    description:"Handcrafted wooden furniture built to order — tables, chairs, and shelving that last generations." },
+        { icon:"🧺", title:"Woven Baskets",       description:"Authentic Zimbabwean woven baskets in traditional and contemporary patterns. Perfect for gifts." },
+        { icon:"🖼️", title:"Wall Art & Décor",   description:"Original paintings and sculptures by local artists celebrating Zimbabwe's landscapes and culture." },
+        { icon:"🎁", title:"Gift Hampers",        description:"Curated gift hampers featuring local products — ideal for corporate gifting and special occasions." },
+        { icon:"👗", title:"Fashion Accessories", description:"Beaded jewellery, fabric bags, and wearable art inspired by our rich heritage." },
+        { icon:"📦", title:"Bulk & Wholesale",    description:"Supplying craft shops, hotels, and exporters with consistent quality at competitive prices." },
+      ],
+      testimonials: [
+        { name:"Tafadzwa M.", location:"Harare",    text:"Absolutely stunning work! I ordered a custom table and it arrived on time, beautifully finished. My guests always ask about it." },
+        { name:"Rudo N.",     location:"Bulawayo",  text:"Best gift hampers in Zimbabwe. My client loved theirs. Chiedza Crafts really understands quality and presentation." },
+        { name:"James K.",   location:"Borrowdale", text:"I've been buying from them for two years. Reliable, friendly, and genuinely proud of what they make. Highly recommended." },
+      ],
+      social: { facebook:"https://facebook.com/", instagram:"https://instagram.com/", twitter:"" },
+    };
+
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary:       BUSINESS_INFO.colors.primary,
+            "primary-dark":BUSINESS_INFO.colors.primaryDark,
+            accent:        BUSINESS_INFO.colors.accent,
+            brand_dark:    BUSINESS_INFO.colors.dark,
+            brand_light:   BUSINESS_INFO.colors.light,
+          },
+          fontFamily: {
+            display: ["Playfair Display","Georgia","serif"],
+            body:    ["DM Sans","system-ui","sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html  { scroll-behavior: smooth; }
+    body  { font-family: "DM Sans", system-ui, sans-serif; background-color: #FDF6EE; color: #1A1108; }
+
+    .hero-texture {
+      background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(200,96,42,.18) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(245,200,66,.12) 0%, transparent 50%),
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23C8602A' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    /* Chat widget */
+    .chat-widget { transition: all .3s cubic-bezier(.4,0,.2,1); }
+    .chat-panel  { transition: all .35s cubic-bezier(.4,0,.2,1); transform-origin: bottom right; }
+    .chat-panel.open  { transform: scale(1)   translateY(0);   opacity: 1; pointer-events: all; }
+    .chat-panel.closed{ transform: scale(.92) translateY(20px);opacity: 0; pointer-events: none; }
+
+    /* Typing dots */
+    @keyframes blink { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
+    .typing-dot { animation: blink 1.4s infinite; }
+    .typing-dot:nth-child(2){ animation-delay:.2s; }
+    .typing-dot:nth-child(3){ animation-delay:.4s; }
+
+    /* Pulse on chat button */
+    @keyframes wa-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(200,96,42,.5)} 50%{box-shadow:0 0 0 12px rgba(200,96,42,0)} }
+    .chat-btn-pulse { animation: wa-pulse 2.8s ease-in-out infinite; }
+
+    /* WA float */
+    @keyframes wa-glow { 0%,100%{box-shadow:0 0 0 0 rgba(37,211,102,.5)} 50%{box-shadow:0 0 0 12px rgba(37,211,102,0)} }
+    .wa-float { animation: wa-glow 2.4s ease-in-out infinite; }
+
+    /* Sticky CTA */
+    .sticky-cta { position:fixed; bottom:0; left:0; right:0; z-index:40; padding:12px 16px;
+                  background:#C8602A; display:flex; align-items:center; justify-content:center;
+                  gap:10px; color:white; font-weight:600; font-size:.95rem;
+                  box-shadow:0 -2px 12px rgba(0,0,0,.15); }
+
+    /* Scroll fade-in */
+    .fade-in { opacity:0; transform:translateY(20px); transition:opacity .5s ease, transform .5s ease; }
+    .fade-in.visible { opacity:1; transform:translateY(0); }
+
+    /* Service card */
+    .service-card { transition: transform .25s, box-shadow .25s; }
+    .service-card:hover { transform:translateY(-4px); box-shadow:0 12px 32px rgba(200,96,42,.15); }
+
+    /* Testimonial */
+    .testimonial-quote::before { content:"\201C"; font-family:"Playfair Display",serif;
+      font-size:5rem; line-height:0; color:#C8602A; opacity:.2;
+      position:absolute; top:1.5rem; left:1rem; }
+
+    /* Section heading underline */
+    .section-heading::after { content:""; display:block; width:48px; height:3px;
+      background:#C8602A; border-radius:2px; margin-top:10px; }
+    .section-heading.center::after { margin:10px auto 0; }
+
+    .form-field:focus { outline:2px solid #C8602A; outline-offset:2px; }
+
+    /* Lead tag badges */
+    .tag-hot  { background:#fee2e2; color:#b91c1c; }
+    .tag-warm { background:#fef9c3; color:#854d0e; }
+    .tag-cold { background:#e0f2fe; color:#0369a1; }
+
+    @media (max-width:767px) { .mobile-bottom-pad { padding-bottom:72px; } }
+  </style>
+</head>
+
+<body class="mobile-bottom-pad" x-data="{ navScrolled: false }" @scroll.window="navScrolled = window.scrollY > 40">
+
+  <!-- ════════════════════════════ NAV ════════════════════════════ -->
+  <nav :class="navScrolled ? 'bg-white shadow-md' : 'bg-transparent'"
+       class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+    <div class="max-w-5xl mx-auto px-4 flex items-center justify-between h-16">
+      <a href="#home" class="font-display font-bold text-xl text-brand_dark" id="nav-brand"></a>
+      <div class="hidden md:flex items-center gap-6 text-sm font-medium text-brand_dark">
+        <a href="#services"     class="hover:text-primary transition-colors">Services</a>
+        <a href="#about"        class="hover:text-primary transition-colors">About</a>
+        <a href="#testimonials" class="hover:text-primary transition-colors">Reviews</a>
+        <a href="#contact"      class="hover:text-primary transition-colors">Contact</a>
+        <a id="nav-wa" href="#" class="bg-primary text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-primary-dark transition-colors">Chat on WhatsApp</a>
+      </div>
+      <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 rounded-lg text-brand_dark" aria-label="Menu">
+        <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg x-show="mobileMenuOpen"  class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div x-show="mobileMenuOpen" x-transition class="md:hidden bg-white border-t px-4 py-4 flex flex-col gap-4 font-medium text-brand_dark">
+      <a href="#services"     @click="mobileMenuOpen=false" class="hover:text-primary">Services</a>
+      <a href="#about"        @click="mobileMenuOpen=false" class="hover:text-primary">About</a>
+      <a href="#testimonials" @click="mobileMenuOpen=false" class="hover:text-primary">Reviews</a>
+      <a href="#contact"      @click="mobileMenuOpen=false" class="hover:text-primary">Contact</a>
+    </div>
+  </nav>
+
+  <!-- ════════════════════════════ HERO ════════════════════════════ -->
+  <section id="home" class="hero-texture min-h-screen flex items-center pt-16">
+    <div class="max-w-5xl mx-auto px-4 py-20 md:py-32">
+      <div class="max-w-xl">
+        <span class="inline-block bg-accent text-brand_dark text-xs font-semibold px-3 py-1 rounded-full mb-6 tracking-wide uppercase">🇿🇼 Proudly Zimbabwean</span>
+        <h1 class="font-display text-4xl md:text-6xl font-black text-brand_dark leading-tight mb-5" id="hero-headline"></h1>
+        <p class="text-gray-600 text-lg mb-8 leading-relaxed" id="hero-sub"></p>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a id="hero-wa-btn" href="#" class="inline-flex items-center justify-center gap-2 bg-primary text-white font-semibold px-7 py-4 rounded-full text-base hover:bg-primary-dark active:scale-95 transition-all shadow-lg shadow-primary/30">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+            Chat on WhatsApp
+          </a>
+          <a href="#services" class="inline-flex items-center justify-center gap-2 border-2 border-brand_dark text-brand_dark font-semibold px-7 py-4 rounded-full text-base hover:bg-brand_dark hover:text-white active:scale-95 transition-all">View Services ↓</a>
+        </div>
+        <div class="flex flex-wrap gap-5 mt-10 text-sm text-gray-500 font-medium">
+          <span>✅ 100% Local</span><span>✅ Custom Orders Welcome</span><span>✅ Fast Delivery in Harare</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ SERVICES ════════════════════════════ -->
+  <section id="services" class="py-20 bg-white">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="mb-12 fade-in">
+        <p class="text-primary font-semibold text-sm uppercase tracking-widest mb-2">What We Offer</p>
+        <h2 class="font-display text-3xl md:text-4xl font-black text-brand_dark section-heading">Our Services</h2>
+      </div>
+      <div id="services-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ ABOUT ════════════════════════════ -->
+  <section id="about" class="py-20 bg-brand_light">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row gap-12 items-center">
+        <div class="md:w-2/5 w-full flex-shrink-0">
+          <div class="relative">
+            <div class="w-full aspect-square rounded-3xl bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
+              <div class="text-center p-8">
+                <div class="text-7xl mb-4">🏺</div>
+                <p class="font-display text-2xl font-bold text-primary">Since 2015</p>
+                <p class="text-gray-500 text-sm mt-1">Crafting with purpose</p>
+              </div>
+            </div>
+            <div class="absolute -bottom-4 -right-4 bg-accent text-brand_dark rounded-2xl px-5 py-3 font-bold shadow-lg">
+              <span class="text-2xl">200+</span><br/><span class="text-xs font-medium">Happy Clients</span>
+            </div>
+          </div>
+        </div>
+        <div class="md:w-3/5 fade-in">
+          <p class="text-primary font-semibold text-sm uppercase tracking-widest mb-2">Our Story</p>
+          <h2 class="font-display text-3xl md:text-4xl font-black text-brand_dark section-heading mb-6">About Us</h2>
+          <p class="text-gray-600 leading-relaxed mb-4" id="about-text"></p>
+          <p class="text-gray-600 leading-relaxed">We work with skilled local artisans, ensuring fair wages and preserving traditional techniques. When you buy from us, you invest in Zimbabwean livelihoods.</p>
+          <div class="mt-8 flex flex-wrap gap-4">
+            <div class="bg-white rounded-xl px-5 py-3 text-center shadow-sm border border-gray-100"><p class="font-display font-bold text-2xl text-primary">10+</p><p class="text-xs text-gray-500 mt-0.5">Years Experience</p></div>
+            <div class="bg-white rounded-xl px-5 py-3 text-center shadow-sm border border-gray-100"><p class="font-display font-bold text-2xl text-primary">50+</p><p class="text-xs text-gray-500 mt-0.5">Artisan Partners</p></div>
+            <div class="bg-white rounded-xl px-5 py-3 text-center shadow-sm border border-gray-100"><p class="font-display font-bold text-2xl text-primary">100%</p><p class="text-xs text-gray-500 mt-0.5">Made in Zimbabwe</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ TESTIMONIALS ════════════════════════════ -->
+  <section id="testimonials" class="py-20 bg-white">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="mb-12 text-center fade-in">
+        <p class="text-primary font-semibold text-sm uppercase tracking-widest mb-2">Client Reviews</p>
+        <h2 class="font-display text-3xl md:text-4xl font-black text-brand_dark section-heading center">What People Say</h2>
+      </div>
+      <div id="testimonials-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ CONTACT ════════════════════════════ -->
+  <section id="contact" class="py-20 bg-brand_light">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="mb-12 fade-in">
+        <p class="text-primary font-semibold text-sm uppercase tracking-widest mb-2">Get In Touch</p>
+        <h2 class="font-display text-3xl md:text-4xl font-black text-brand_dark section-heading">Contact Us</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div class="space-y-6 fade-in">
+          <p class="text-gray-600 leading-relaxed">Ready to order, or have questions? Reach out via WhatsApp, phone, or email — we respond quickly.</p>
+          <div class="space-y-4">
+            <div class="flex items-start gap-4 bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-lg flex-shrink-0">📞</div>
+              <div><p class="text-xs text-gray-400 font-medium uppercase tracking-wide mb-0.5">Phone / WhatsApp</p><a id="contact-phone" href="#" class="font-semibold text-brand_dark hover:text-primary transition-colors"></a></div>
+            </div>
+            <div class="flex items-start gap-4 bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-lg flex-shrink-0">✉️</div>
+              <div><p class="text-xs text-gray-400 font-medium uppercase tracking-wide mb-0.5">Email</p><a id="contact-email" href="#" class="font-semibold text-brand_dark hover:text-primary transition-colors"></a></div>
+            </div>
+            <div class="flex items-start gap-4 bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-lg flex-shrink-0">📍</div>
+              <div><p class="text-xs text-gray-400 font-medium uppercase tracking-wide mb-0.5">Location</p><p id="contact-location" class="font-semibold text-brand_dark"></p></div>
+            </div>
+          </div>
+          <a id="contact-wa-btn" href="#" class="inline-flex items-center gap-2 bg-[#25D366] text-white font-semibold px-6 py-3 rounded-full hover:bg-[#1ebe5d] active:scale-95 transition-all shadow-md shadow-green-200">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+            Message Us on WhatsApp
+          </a>
+        </div>
+
+        <!-- Contact form -->
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 fade-in"
+             x-data="{ name:'', phone:'', message:'', submitted:false, submitting:false }">
+          <h3 class="font-display font-bold text-xl text-brand_dark mb-6">Send Us a Message</h3>
+          <div x-show="!submitted" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Full Name *</label>
+              <input x-model="name" type="text" placeholder="Tendai Moyo" class="form-field w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-gray-50 focus:bg-white transition-colors" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Phone Number *</label>
+              <input x-model="phone" type="tel" placeholder="+263 7X XXX XXXX" class="form-field w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-gray-50 focus:bg-white transition-colors" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Message *</label>
+              <textarea x-model="message" rows="4" placeholder="Tell us what you're looking for..." class="form-field w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-gray-50 focus:bg-white transition-colors resize-none"></textarea>
+            </div>
+            <button @click="if(!name.trim()||!phone.trim()||!message.trim()){alert('Please fill in all fields.');return;} submitting=true; setTimeout(()=>{submitting=false;submitted=true;},1000);"
+                    :disabled="submitting"
+                    class="w-full bg-primary text-white font-semibold py-3.5 rounded-xl hover:bg-primary-dark active:scale-[0.98] transition-all disabled:opacity-60">
+              <span x-show="!submitting">Send Message →</span><span x-show="submitting">Sending...</span>
+            </button>
+          </div>
+          <div x-show="submitted" x-transition class="text-center py-8">
+            <div class="text-5xl mb-4">✅</div>
+            <h4 class="font-display font-bold text-xl text-brand_dark mb-2">Message Received!</h4>
+            <p class="text-gray-500 text-sm mb-6">Thank you! We'll get back to you shortly.</p>
+            <button @click="submitted=false;name='';phone='';message='';" class="text-primary font-medium text-sm underline underline-offset-2">Send another message</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ FOOTER ════════════════════════════ -->
+  <footer class="bg-brand_dark text-white py-12">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between gap-8 mb-8">
+        <div class="max-w-xs">
+          <p class="font-display font-bold text-2xl mb-2" id="footer-name"></p>
+          <p class="text-gray-400 text-sm leading-relaxed" id="footer-tagline"></p>
+        </div>
+        <div>
+          <p class="font-semibold text-sm uppercase tracking-wide text-gray-400 mb-3">Quick Links</p>
+          <div class="flex flex-col gap-2 text-sm text-gray-300">
+            <a href="#services" class="hover:text-white">Services</a>
+            <a href="#about" class="hover:text-white">About</a>
+            <a href="#testimonials" class="hover:text-white">Reviews</a>
+            <a href="#contact" class="hover:text-white">Contact</a>
+          </div>
+        </div>
+        <div>
+          <p class="font-semibold text-sm uppercase tracking-wide text-gray-400 mb-3">Contact</p>
+          <div class="flex flex-col gap-2 text-sm text-gray-300">
+            <a id="footer-phone" href="#" class="hover:text-white"></a>
+            <a id="footer-email" href="#" class="hover:text-white"></a>
+            <p id="footer-location" class="text-gray-400"></p>
+          </div>
+        </div>
+        <div id="footer-social">
+          <p class="font-semibold text-sm uppercase tracking-wide text-gray-400 mb-3">Follow Us</p>
+          <div class="flex gap-3" id="social-links"></div>
+        </div>
+      </div>
+      <div class="border-t border-white/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-gray-500">
+        <p id="footer-copy"></p><p>Made with ❤️ in Zimbabwe</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ════════════════════════════ FLOATING WA ════════════════════════════ -->
+  <a id="wa-float-btn" href="#" class="wa-float fixed bottom-20 md:bottom-24 right-4 z-40 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-transform" title="Chat on WhatsApp" aria-label="Chat on WhatsApp">
+    <svg class="w-7 h-7 fill-white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+  </a>
+
+  <!-- ════════════════════════════ STICKY MOBILE CTA ════════════════════════════ -->
+  <a id="sticky-cta" href="#" class="sticky-cta md:hidden">
+    <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    Chat on WhatsApp
+  </a>
+
+
+  <!-- ════════════════════════════════════════════════════════════════
+       AI CHAT WIDGET
+  ════════════════════════════════════════════════════════════════ -->
+  <div id="chat-widget" x-data="chatWidget()" class="fixed bottom-6 right-4 z-50 flex flex-col items-end gap-3">
+
+    <!-- Chat panel -->
+    <div class="chat-panel w-[340px] sm:w-[380px] max-h-[560px] bg-white rounded-3xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
+         :class="open ? 'open' : 'closed'">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100" style="background: #C8602A;">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg">🏺</div>
+          <div>
+            <p class="font-semibold text-white text-sm" id="chat-title">Chiedza Crafts</p>
+            <div class="flex items-center gap-1.5">
+              <div class="w-2 h-2 rounded-full bg-green-300" :class="online ? 'bg-green-300' : 'bg-gray-400'"></div>
+              <p class="text-white/80 text-xs" x-text="online ? 'AI Assistant • Online' : 'AI Offline — check backend'"></p>
+            </div>
+          </div>
+        </div>
+        <button @click="open=false" class="text-white/70 hover:text-white transition-colors p-1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Messages -->
+      <div class="flex-1 overflow-y-auto px-4 py-4 space-y-3" id="chat-messages" x-ref="messages">
+        <template x-for="msg in messages" :key="msg.id">
+          <div class="flex" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
+            <div class="max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed"
+                 :class="msg.role === 'user'
+                   ? 'bg-primary text-white rounded-br-sm'
+                   : 'bg-gray-100 text-gray-800 rounded-bl-sm'">
+              <p x-text="msg.content" class="whitespace-pre-wrap"></p>
+              <p class="text-xs mt-1 opacity-50 text-right" x-text="msg.time"></p>
+            </div>
+          </div>
+        </template>
+
+        <!-- Typing indicator -->
+        <div x-show="typing" class="flex justify-start">
+          <div class="bg-gray-100 px-4 py-3 rounded-2xl rounded-bl-sm flex gap-1 items-center">
+            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400 inline-block"></span>
+            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400 inline-block"></span>
+            <span class="typing-dot w-2 h-2 rounded-full bg-gray-400 inline-block"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lead captured banner -->
+      <div x-show="leadCaptured" x-transition class="mx-4 mb-2 bg-green-50 border border-green-200 rounded-2xl p-3">
+        <div class="flex items-start gap-2">
+          <span class="text-lg">🎉</span>
+          <div>
+            <p class="text-xs font-semibold text-green-800 mb-1">Lead captured! <span class="font-bold" x-text="leadTag"></span></p>
+            <p class="text-xs text-green-700 leading-relaxed" x-text="leadSummary"></p>
+            <a :href="waHandoffUrl" target="_blank"
+               class="inline-flex items-center gap-1.5 mt-2 bg-[#25D366] text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-[#1ebe5d] transition-colors">
+              <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+              Continue on WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <div class="px-4 py-3 border-t border-gray-100 bg-gray-50/50">
+        <div class="flex gap-2">
+          <input x-model="input" @keydown.enter="sendMessage()"
+                 type="text" placeholder="Type a message…"
+                 :disabled="typing"
+                 class="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors disabled:opacity-50" />
+          <button @click="sendMessage()" :disabled="!input.trim() || typing"
+                  class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white hover:bg-primary-dark active:scale-95 transition-all disabled:opacity-40 flex-shrink-0">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+        <p class="text-center text-xs text-gray-400 mt-2">Powered by AI · answers based on business info only</p>
+      </div>
+    </div>
+
+    <!-- Toggle button -->
+    <button @click="toggleChat()"
+            class="chat-btn-pulse w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-transform relative"
+            style="background:#C8602A" aria-label="Open AI Chat">
+      <!-- Unread badge -->
+      <span x-show="!open && unread > 0"
+            class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold"
+            x-text="unread"></span>
+      <!-- Icons -->
+      <svg x-show="!open" class="w-6 h-6 fill-white" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+      <svg x-show="open" class="w-6 h-6 fill-white" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+  </div>
+
+
+  <!-- ════════════════════════════ SCRIPTS ════════════════════════════ -->
+  <script>
+    // ── Utility ─────────────────────────────────────────────────────────
+    const waURL = (text) => `https://wa.me/${BUSINESS_INFO.phone}?text=${encodeURIComponent(text)}`;
+    const now   = () => new Date().toLocaleTimeString("en-ZW", { hour:"2-digit", minute:"2-digit" });
+    const uid   = () => Math.random().toString(36).slice(2, 9);
+
+    // ── Inject static content ────────────────────────────────────────────
+    function injectContent() {
+      const B = BUSINESS_INFO;
+      document.title = `${B.name} | Zimbabwe`;
+      document.getElementById("nav-brand").textContent = B.name;
+      document.getElementById("nav-wa").href = waURL(B.whatsappGreeting);
+      document.getElementById("hero-headline").innerHTML = `${B.name}<br/><span class="text-primary">${B.tagline}</span>`;
+      document.getElementById("hero-sub").textContent = "Quality crafts, gifts & home décor — made locally, delivered with care. Chat with our AI assistant or reach out on WhatsApp.";
+      document.getElementById("hero-wa-btn").href = waURL(B.whatsappGreeting);
+      document.getElementById("about-text").textContent = B.description;
+      document.getElementById("contact-phone").textContent = B.phoneDisplay;
+      document.getElementById("contact-phone").href = `tel:+${B.phone}`;
+      document.getElementById("contact-email").textContent = B.email;
+      document.getElementById("contact-email").href = `mailto:${B.email}`;
+      document.getElementById("contact-location").textContent = B.location;
+      document.getElementById("contact-wa-btn").href = waURL(B.whatsappGreeting);
+      document.getElementById("wa-float-btn").href = waURL(B.whatsappGreeting);
+      document.getElementById("sticky-cta").href = waURL(B.whatsappGreeting);
+      document.getElementById("footer-name").textContent = B.name;
+      document.getElementById("footer-tagline").textContent = B.tagline;
+      document.getElementById("footer-phone").textContent = B.phoneDisplay;
+      document.getElementById("footer-phone").href = `tel:+${B.phone}`;
+      document.getElementById("footer-email").textContent = B.email;
+      document.getElementById("footer-email").href = `mailto:${B.email}`;
+      document.getElementById("footer-location").textContent = B.location;
+      document.getElementById("footer-copy").textContent = `© ${new Date().getFullYear()} ${B.name}. All rights reserved.`;
+      document.getElementById("chat-title").textContent = B.name;
+    }
+
+    function renderServices() {
+      document.getElementById("services-grid").innerHTML = BUSINESS_INFO.services.map(s => `
+        <div class="service-card bg-brand_light rounded-2xl p-6 border border-gray-100 fade-in">
+          <div class="text-4xl mb-4">${s.icon}</div>
+          <h3 class="font-display font-bold text-lg text-brand_dark mb-2">${s.title}</h3>
+          <p class="text-gray-500 text-sm leading-relaxed">${s.description}</p>
+        </div>`).join("");
+    }
+
+    function renderTestimonials() {
+      document.getElementById("testimonials-grid").innerHTML = BUSINESS_INFO.testimonials.map(t => `
+        <div class="testimonial-quote relative bg-brand_light rounded-3xl p-6 border border-gray-100 fade-in">
+          <div class="flex gap-1 mb-3 text-accent text-lg">★★★★★</div>
+          <p class="text-gray-600 text-sm leading-relaxed mb-5 relative z-10">${t.text}</p>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">${t.name.charAt(0)}</div>
+            <div><p class="font-semibold text-brand_dark text-sm">${t.name}</p><p class="text-gray-400 text-xs">${t.location}</p></div>
+          </div>
+        </div>`).join("");
+    }
+
+    function renderSocial() {
+      const icons = {
+        facebook:  `<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`,
+        instagram: `<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>`,
+        twitter:   `<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+      };
+      const links = Object.entries(BUSINESS_INFO.social).filter(([,u])=>u)
+        .map(([k,u])=>`<a href="${u}" target="_blank" class="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-primary transition-colors">${icons[k]||""}</a>`).join("");
+      document.getElementById("social-links").innerHTML = links;
+      if (!links) document.getElementById("footer-social").style.display = "none";
+    }
+
+    function initScrollObserver() {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add("visible"); obs.unobserve(e.target); } });
+      }, { threshold: 0.12 });
+      document.querySelectorAll(".fade-in").forEach(el => obs.observe(el));
+    }
+
+    // ── Alpine root (mobileMenuOpen) ─────────────────────────────────────
+    function appRoot() {
+      return { mobileMenuOpen: false };
+    }
+
+    // ── AI Chat widget ────────────────────────────────────────────────────
+    function chatWidget() {
+      return {
+        open: false,
+        online: false,
+        typing: false,
+        input: "",
+        messages: [],
+        unread: 0,
+        sessionId: uid(),
+
+        // Lead state
+        leadCaptured: false,
+        leadTag: "",
+        leadSummary: "",
+        waHandoffUrl: "",
+        leadData: { service: null, urgency: null, budget: null, contact: null },
+        contactCollected: false,
+
+        async init() {
+          // Check backend health
+          try {
+            const r = await fetch(`${BUSINESS_INFO.apiBase}/health`, { signal: AbortSignal.timeout(4000) });
+            this.online = r.ok;
+          } catch { this.online = false; }
+
+          // Welcome message (after short delay)
+          setTimeout(() => {
+            const greeting = this.online
+              ? `👋 Hello! I'm the ${BUSINESS_INFO.name} AI assistant.\n\nI can help you with product info, pricing, and placing orders. What can I help you with today?`
+              : `👋 Hello! I'm the ${BUSINESS_INFO.name} assistant.\n\n⚠️ The AI backend is not running. Please start the Python server and reload.\n\nIn the meantime, you can reach us on WhatsApp: ${BUSINESS_INFO.phoneDisplay}`;
+            this.pushMessage("assistant", greeting);
+            this.unread = 1;
+          }, 600);
+        },
+
+        toggleChat() {
+          this.open = !this.open;
+          if (this.open) { this.unread = 0; this.$nextTick(() => this.scrollToBottom()); }
+        },
+
+        pushMessage(role, content) {
+          this.messages.push({ id: uid(), role, content, time: now() });
+          this.$nextTick(() => this.scrollToBottom());
+          if (role === "assistant" && !this.open) this.unread++;
+        },
+
+        scrollToBottom() {
+          const el = this.$refs.messages;
+          if (el) el.scrollTop = el.scrollHeight;
+        },
+
+        async sendMessage() {
+          const text = this.input.trim();
+          if (!text || this.typing) return;
+          this.input = "";
+          this.pushMessage("user", text);
+
+          if (!this.online) {
+            this.pushMessage("assistant", `I'm not connected to the AI right now. Please reach us on WhatsApp: ${BUSINESS_INFO.phoneDisplay}`);
+            return;
+          }
+
+          this.typing = true;
+          try {
+            // Build history for backend (last 12 messages, exclude welcome)
+            const history = this.messages.slice(-12).map(m => ({ role: m.role, content: m.content }));
+
+            const res = await fetch(`${BUSINESS_INFO.apiBase}/chat`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                session_id: this.sessionId,
+                message: text,
+                history: history.slice(0, -1), // exclude the message we just added
+              }),
+            });
+
+            if (!res.ok) throw new Error(await res.text());
+            const data = await res.json();
+            this.pushMessage("assistant", data.reply);
+
+            // Extract lead signals from conversation
+            this.extractLeadData(text, data.reply);
+
+            // If we have a contact number, submit the lead
+            if (this.contactCollected && !this.leadCaptured) {
+              await this.submitLead();
+            }
+          } catch (err) {
+            console.error("Chat error:", err);
+            this.pushMessage("assistant", "Sorry, I had a connection issue. Please try again or reach us directly on WhatsApp.");
+          } finally {
+            this.typing = false;
+          }
+        },
+
+        extractLeadData(userMsg, botReply) {
+          const msg = userMsg.toLowerCase();
+
+          // Detect service
+          const services = ["furniture","basket","baskets","art","décor","decor","hamper","hampers","accessories","wholesale","bulk"];
+          for (const s of services) {
+            if (msg.includes(s) && !this.leadData.service) {
+              this.leadData.service = s;
+            }
+          }
+
+          // Detect urgency
+          const urgencyWords = ["today","tomorrow","asap","urgent","this week","now","soon","monday","tuesday","wednesday","thursday","friday"];
+          for (const w of urgencyWords) {
+            if (msg.includes(w) && !this.leadData.urgency) {
+              this.leadData.urgency = userMsg;
+            }
+          }
+
+          // Detect budget
+          const budgetPattern = /\$?\d+|\busd\b|\bbudget\b/i;
+          if (budgetPattern.test(userMsg) && !this.leadData.budget) {
+            this.leadData.budget = userMsg;
+          }
+
+          // Detect phone number (loose Zim pattern)
+          const phonePattern = /(?:\+?263|0)[\s-]?7[1-9][\s-]?\d{3}[\s-]?\d{4}|07[1-9]\d{7}/;
+          const phoneMatch = userMsg.match(phonePattern);
+          if (phoneMatch && !this.contactCollected) {
+            this.leadData.contact = phoneMatch[0];
+            this.contactCollected = true;
+          }
+        },
+
+        async submitLead() {
+          try {
+            const allMessages = this.messages.map(m => ({ role: m.role, content: m.content }));
+            const res = await fetch(`${BUSINESS_INFO.apiBase}/lead`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                session_id: this.sessionId,
+                service: this.leadData.service,
+                urgency: this.leadData.urgency,
+                budget: this.leadData.budget,
+                contact: this.leadData.contact,
+                conversation: allMessages,
+              }),
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            this.leadCaptured = true;
+            this.leadTag = data.tag;
+            this.leadSummary = data.summary;
+
+            // Build pre-filled WA handoff
+            const msgParts = [`Hello ${BUSINESS_INFO.name}!`];
+            if (this.leadData.service) msgParts.push(`I'm interested in: ${this.leadData.service}.`);
+            if (this.leadData.urgency)  msgParts.push(`Urgency: ${this.leadData.urgency}.`);
+            if (this.leadData.budget)   msgParts.push(`Budget: ${this.leadData.budget}.`);
+            msgParts.push("Please get in touch with me.");
+            this.waHandoffUrl = waURL(msgParts.join(" "));
+
+            this.$nextTick(() => this.scrollToBottom());
+          } catch (err) {
+            console.error("Lead submit error:", err);
+          }
+        },
+      };
+    }
+
+    // ── Boot ─────────────────────────────────────────────────────────────
+    document.addEventListener("DOMContentLoaded", () => {
+      injectContent();
+      renderServices();
+      renderTestimonials();
+      renderSocial();
+      setTimeout(initScrollObserver, 150);
+    });
+  </script>
+</body>
+</html>

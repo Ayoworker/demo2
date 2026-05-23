@@ -1,0 +1,87 @@
+{
+  "business_name": "Chiedza Crafts",
+  "tagline": "Handcrafted goods made with Zimbabwean pride.",
+  "location": "Corner Samora Machel & Julius Nyerere, Harare, Zimbabwe",
+  "hours": "Monday–Saturday: 8:00 AM – 6:00 PM. Sunday: 10:00 AM – 3:00 PM.",
+  "phone": "+263 77 123 4567",
+  "email": "hello@chiedzcrafts.co.zw",
+  "whatsapp_number": "263771234567",
+  "services": [
+    {
+      "name": "Custom Furniture",
+      "description": "Handcrafted wooden tables, chairs, shelves, and beds built to your exact specifications.",
+      "lead_time": "2–4 weeks depending on complexity"
+    },
+    {
+      "name": "Woven Baskets",
+      "description": "Authentic Zimbabwean woven baskets in traditional and contemporary patterns. Available in multiple sizes.",
+      "lead_time": "1–2 weeks for bulk orders"
+    },
+    {
+      "name": "Wall Art & Décor",
+      "description": "Original paintings, sculptures, and wall hangings by local artists. Custom commissions available.",
+      "lead_time": "1–3 weeks"
+    },
+    {
+      "name": "Gift Hampers",
+      "description": "Curated gift hampers with local products — ideal for corporate gifts, weddings, and special occasions.",
+      "lead_time": "3–5 business days"
+    },
+    {
+      "name": "Fashion Accessories",
+      "description": "Beaded jewellery, fabric bags, and wearable art inspired by Zimbabwean heritage.",
+      "lead_time": "Ready to ship within 2–3 days"
+    },
+    {
+      "name": "Bulk & Wholesale",
+      "description": "Supplying craft shops, hotels, lodges, and exporters. Minimum order applies. Volume discounts available.",
+      "lead_time": "Depends on order size — contact us for a quote"
+    }
+  ],
+  "pricing": [
+    { "item": "Woven baskets (small)", "price": "USD 5 – 15" },
+    { "item": "Woven baskets (large)", "price": "USD 20 – 45" },
+    { "item": "Gift hampers", "price": "USD 25 – 150 depending on contents" },
+    { "item": "Wall art (small)", "price": "USD 30 – 80" },
+    { "item": "Wall art (large / commission)", "price": "USD 100 – 500+" },
+    { "item": "Custom furniture", "price": "USD 150 – 2000+ depending on size and material" },
+    { "item": "Fashion accessories", "price": "USD 5 – 40" },
+    { "item": "Wholesale / bulk", "price": "Contact us for custom pricing" }
+  ],
+  "faq": [
+    {
+      "question": "Do you deliver outside Harare?",
+      "answer": "Yes! We deliver nationwide via courier partners. Delivery fees apply based on location. We also ship internationally for bulk orders."
+    },
+    {
+      "question": "Can I place a custom order?",
+      "answer": "Absolutely. Most of our products can be customised — size, colour, material, or design. Contact us on WhatsApp for a custom quote."
+    },
+    {
+      "question": "What payment methods do you accept?",
+      "answer": "We accept USD cash, EcoCash, bank transfer (ZWL and USD), and mobile money. We do not accept credit cards currently."
+    },
+    {
+      "question": "Do you offer corporate or bulk discounts?",
+      "answer": "Yes! We offer discounts for orders above USD 300 and have special corporate gifting packages. Get in touch for a quote."
+    },
+    {
+      "question": "How long does delivery take in Harare?",
+      "answer": "Harare same-day or next-day delivery is available for most in-stock items. Custom orders take longer — see individual product lead times."
+    },
+    {
+      "question": "Do you have a physical shop?",
+      "answer": "Yes, we are located at Corner Samora Machel & Julius Nyerere in Harare. Open Mon–Sat 8AM–6PM and Sunday 10AM–3PM."
+    },
+    {
+      "question": "Can I see samples before ordering?",
+      "answer": "Yes, you can visit our shop or request photos/videos via WhatsApp before placing your order."
+    }
+  ],
+  "lead_qualifying_questions": [
+    "What product or service are you interested in?",
+    "When do you need it by?",
+    "Do you have a budget in mind?",
+    "What is the best number to reach you on?"
+  ]
+}
